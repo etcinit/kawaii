@@ -1,0 +1,36 @@
+name: hakyll-serve
+version: 0.0.1.0
+synopsis: Utilities for serving Hakyll blogs
+maintainer: Eduardo Trujillo <ed@chromabits.com>
+license: MIT
+github: etcinit/hakyll-serve
+category: Web
+
+ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -Werror
+
+default-extensions:
+  - LambdaCase
+
+dependencies:
+  - base >= 4.7 && < 5
+  - safe == 0.3.*
+  - text
+  - bytestring
+  - warp == 3.*
+  - warp-tls == 3.*
+  - wai == 3.*
+  - wai-extra >= 3.0.14
+  - wai-app-static == 3.*
+  - streaming-commons == 0.1.*
+
+library:
+  source-dirs: src
+
+tests:
+  hakyll-serve-spec:
+    main: Spec.hs
+    source-dirs: test
+    dependencies:
+      - hakyll-serve
+      - hspec
+      - QuickCheck
