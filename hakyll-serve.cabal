@@ -28,6 +28,8 @@ library
     , safe == 0.3.*
     , text
     , bytestring
+    , hakyll
+    , optparse-applicative
     , warp == 3.*
     , warp-tls == 3.*
     , wai == 3.*
@@ -38,6 +40,7 @@ library
       Hakyll.Serve
       Hakyll.Serve.Applications
       Hakyll.Serve.Listeners
+      Hakyll.Serve.Main
       Hakyll.Serve.Middleware
   default-language: Haskell2010
 
@@ -53,6 +56,8 @@ test-suite hakyll-serve-spec
     , safe == 0.3.*
     , text
     , bytestring
+    , hakyll
+    , optparse-applicative
     , warp == 3.*
     , warp-tls == 3.*
     , wai == 3.*

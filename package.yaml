@@ -16,6 +16,8 @@ dependencies:
   - safe == 0.3.*
   - text
   - bytestring
+  - hakyll
+  - optparse-applicative
   - warp == 3.*
   - warp-tls == 3.*
   - wai == 3.*
