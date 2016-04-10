@@ -12,6 +12,8 @@ module Hakyll.Serve.Middleware
   , flatten
   , wrap
     -- * Middlewares
+  , loggerMiddleware
+  , forceSSLMiddleware
   , gzipMiddleware
   , domainMiddleware
   , securityHeadersMiddleware
@@ -27,10 +29,12 @@ import Data.Text.Encoding (encodeUtf8)
 import Data.Monoid ((<>))
 import Safe (lastMay)
 import Network.Wai (Application, Middleware, pathInfo)
-import Network.Wai.Middleware.AddHeaders    (addHeaders)
-import Network.Wai.Middleware.ForceDomain   (forceDomain)
-import Network.Wai.Middleware.Gzip          (def, gzip)
-import Network.Wai.Middleware.Vhost         (redirectTo)
+import Network.Wai.Middleware.AddHeaders (addHeaders)
+import Network.Wai.Middleware.ForceDomain (forceDomain)
+import Network.Wai.Middleware.Gzip (def, gzip)
+import Network.Wai.Middleware.Vhost (redirectTo)
+import Network.Wai.Middleware.RequestLogger (logStdout)
+import Network.Wai.Middleware.ForceSSL (forceSSL)
 
 type Domain = ByteString
 
@@ -100,6 +104,14 @@ showDirective (Sandbox x) = dt "sandbox" [x]
 showDirective (ScriptSrc xs) = dt "script-src" xs
 showDirective (StyleSrc xs) = dt "style-src" xs
 showDirective (UpgradeInsecureRequests) = dt "upgrade-insecure-requests" []
+
+-- | Logger middleware.
+loggerMiddleware :: Middleware
+loggerMiddleware = logStdout
+
+-- | Middleware for forcing requests to be done through SSL.
+forceSSLMiddleware :: Middleware
+forceSSLMiddleware = forceSSL
 
 -- | Gzip compression middleware.
 gzipMiddleware :: Middleware

@@ -1,13 +1,18 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Hakyll.Serve.Listeners where
+module Hakyll.Serve.Listeners
+  ( -- * Listeners
+    listen
+  , listenTLS
+    -- * Re-exports
+  , TLSSettings
+  , tlsSettingsChain
+  ) where
 
-import Data.Maybe (fromMaybe)
 import Network.Wai.Handler.Warp (defaultSettings, runSettings, setHost,
   setPort)
 import Network.Wai (Application)
-import Network.Wai.Handler.WarpTLS (runTLS, tlsSettingsChain)
-import System.Environment (lookupEnv)
+import Network.Wai.Handler.WarpTLS (TLSSettings, runTLS, tlsSettingsChain)
 
 -- | Serves a WAI Application on the specified port.
 -- The target port is printed to stdout before hand, which can be useful for
@@ -24,16 +29,8 @@ listen port app = do
 -- | Serves a WAI Application on the specified port.
 -- The target port is printed to stdout before hand, which can be useful for
 -- debugging purposes.
-listenTLS :: Int -> Application -> IO ()
-listenTLS port app = do
-  certPath <- lookupEnv "BLOG_TLS_CERT"
-  chainPath <- lookupEnv "BLOG_TLS_CHAIN"
-  keyPath <- lookupEnv "BLOG_TLS_KEY"
-
-  let tlsSettings = tlsSettingsChain
-                      (fromMaybe "cert.pem" certPath)
-                      [fromMaybe "fullchain.pem" chainPath]
-                      (fromMaybe "privkey.pem" keyPath)
+listenTLS :: TLSSettings -> Int -> Application -> IO ()
+listenTLS tlsSettings port app = do
   let settings = setHost "*6" (setPort port defaultSettings)
 
   -- Inform which port we will be listening on.
