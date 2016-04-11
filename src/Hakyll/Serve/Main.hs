@@ -52,8 +52,8 @@ data HakyllCommandOptions = HakyllCommandOptions String Bool Bool Bool
   deriving (Show)
 
 data HakyllServeOptions = HakyllServeOptions
-  { hsCommand :: HakyllServeCommand
-  } deriving (Show)
+  { hsCommand :: HakyllServeCommand }
+  deriving (Show)
 
 data ServeConfiguration = ServeConfiguration
   { _hakyllConfiguration :: Configuration
@@ -95,8 +95,8 @@ hakyllServeOptions = runA $ proc () -> do
   A helper -< HakyllServeOptions cmd
 
 hakyllServeCommand :: Mod CommandFields HakyllServeCommand
-hakyllServeCommand =
-  command "hakyll"
+hakyllServeCommand
+  = command "hakyll"
     (info hakyllCommandOptions (progDesc "Access hakyll commands"))
   <> command "serve"
     (info (pure ServeCommand) (progDesc "Start a server hosting the site"))
@@ -104,10 +104,10 @@ hakyllServeCommand =
 hakyllCommandOptions :: Parser HakyllServeCommand
 hakyllCommandOptions = HakyllCommand
   <$> (HakyllCommandOptions
-  <$> strArgument (metavar "SUBCOMMAND")
-  <*> switch (long "verbose")
-  <*> switch (long "internal-links")
-  <*> switch (long "no-server"))
+    <$> strArgument (metavar "SUBCOMMAND")
+    <*> switch (long "verbose")
+    <*> switch (long "internal-links")
+    <*> switch (long "no-server"))
 
 pinfo :: ParserInfo HakyllServeOptions
 pinfo = info hakyllServeOptions
@@ -154,12 +154,13 @@ serve conf = case _stage conf of
 serve' :: ServeConfiguration -> IO ()
 serve' conf = do
   let mw = conf ^. middleware
-  print $ conf ^. port
+
   _ <- forkIO $ case conf ^. tlsConfiguration of
     Just tlsConfig -> listenTLS
       (tlsConfig ^. tlsSettings)
       (tlsConfig ^. tlsPort)
       ((tlsConfig ^. tlsMiddleware) mw `wrap` staticSite (conf ^. path))
     Nothing -> return ()
+
   listen (conf ^. port) (mw `wrap` staticSite (conf ^. path))
 
