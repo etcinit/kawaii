@@ -22,8 +22,9 @@ module Hakyll.Serve.Middleware
   , deindexifyMiddleware
   ) where
 
+import Prelude hiding (unwords)
 import Data.ByteString (ByteString)
-import Data.Text (Text, intercalate)
+import Data.Text (Text, unwords, intercalate)
 import qualified Data.Text as T (concat)
 import Data.Text.Encoding (encodeUtf8)
 import Data.Monoid ((<>))
@@ -70,18 +71,21 @@ instance Monoid MiddlewareStack where
   mappend (MiddlewareStack x) (MiddlewareStack y) = MiddlewareStack (x ++ y)
 
 infixl 5 <#>
+-- | A combinator for adding a middleware to the bottom of a stack.
 (<#>) :: MiddlewareStack -> Middleware -> MiddlewareStack
 (<#>) (MiddlewareStack s) m = MiddlewareStack (s ++ [m])
 
+-- | Combines the entire stack into a single middleware.
 flatten :: MiddlewareStack -> Middleware
 flatten (MiddlewareStack s) = foldr (.) id s
 
+-- | Wraps a WAI application in the stack.
 wrap :: MiddlewareStack -> Application -> Application
-wrap s app = (flatten s) app
+wrap s = (flatten s)
 
 dt :: Text -> [Text] -> Text
 dt prefix [] = prefix
-dt prefix xs = intercalate " " ([prefix] ++ xs)
+dt prefix xs = unwords ([prefix] ++ xs)
 
 showDirective :: Directive -> Text
 showDirective (BaseURI xs) = dt "base-uri" xs
@@ -103,7 +107,7 @@ showDirective (ReportURI x) = dt "report-uri" [x]
 showDirective (Sandbox x) = dt "sandbox" [x]
 showDirective (ScriptSrc xs) = dt "script-src" xs
 showDirective (StyleSrc xs) = dt "style-src" xs
-showDirective (UpgradeInsecureRequests) = dt "upgrade-insecure-requests" []
+showDirective UpgradeInsecureRequests = dt "upgrade-insecure-requests" []
 
 -- | Logger middleware.
 loggerMiddleware :: Middleware
