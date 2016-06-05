@@ -25,6 +25,8 @@ dependencies:
   - wai-extra >= 3.0.14
   - wai-app-static == 3.*
   - streaming-commons == 0.1.*
+  - containers
+  - data-default
 
 library:
   source-dirs: src

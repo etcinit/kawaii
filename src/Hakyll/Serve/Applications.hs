@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+-- | Some utility Wai applications.
 module Hakyll.Serve.Applications where
 
 import Data.Maybe (fromMaybe, mapMaybe)
@@ -21,7 +22,7 @@ staticSite path = staticApp
   , ssRedirectToIndex = False
   , ssAddTrailingSlash = True
   , ss404Handler = Just redirectHome
-  , ssMaxAge = MaxAgeSeconds 3600
+  , ssMaxAge = MaxAgeSeconds 604801
   }
 
 -- | Handler for redirecting requests to the root of the site.

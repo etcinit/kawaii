@@ -32,7 +32,7 @@ import Safe (lastMay)
 import Network.Wai (Application, Middleware, pathInfo)
 import Network.Wai.Middleware.AddHeaders (addHeaders)
 import Network.Wai.Middleware.ForceDomain (forceDomain)
-import Network.Wai.Middleware.Gzip (def, gzip)
+import Network.Wai.Middleware.Gzip (gzip, GzipFiles(GzipCompress), def, gzipFiles)
 import Network.Wai.Middleware.Vhost (redirectTo)
 import Network.Wai.Middleware.RequestLogger (logStdout)
 import Network.Wai.Middleware.ForceSSL (forceSSL)
@@ -119,7 +119,9 @@ forceSSLMiddleware = forceSSL
 
 -- | Gzip compression middleware.
 gzipMiddleware :: Middleware
-gzipMiddleware = gzip def
+gzipMiddleware = gzip $ def
+  { gzipFiles = GzipCompress
+  }
 
 -- | Domain redirection middleware.
 -- When the site is live, we want to redirect users to the right domain name

@@ -1,5 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+-- | The Listeners module includes wrappers for starting TLS and non-TLS Warp
+-- servers, with support for IPv4 and IPv6.
 module Hakyll.Serve.Listeners
   ( -- * Listeners
     listen

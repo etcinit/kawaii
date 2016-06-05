@@ -2,6 +2,9 @@
 {-# LANGUAGE Arrows #-}
 {-# LANGUAGE TemplateHaskell #-}
 
+-- | The Main module contains a wrapper function that can be used as your
+-- program's main function. It encapsulates both the Hakyll commands and the
+-- server functionality into a single binary.
 module Hakyll.Serve.Main
   ( -- * Main wrappers
     hakyllServe
@@ -41,7 +44,53 @@ import Options.Applicative.Arrows
 import System.Environment (withArgs, getArgs)
 import Safe (tailDef)
 
+-- | The development stage an application is executing in.
+--
+-- This is used to alter the behavior of the server depending on the stage of
+-- development. For example, a local development server might only have an
+-- HTTP listener and a smaller middleware stack, while a production server
+-- also listens for TLS connections and has additional middlewares that only
+-- make sense on a public server.
 data Stage = Development | Staging | Production deriving (Show)
+
+-- | The configuration for the server process.
+--
+-- The different transforms can be used to specify how the configuration
+-- changes depending on the stage. While starting up, the server process will
+-- take the base configuration, check the stage and pass the configuration
+-- through the appropriate transformer.
+data ServeConfiguration = ServeConfiguration
+  { _hakyllConfiguration :: Configuration
+    -- | Base middleware stack.
+  , _middleware :: MiddlewareStack
+    -- | @Developer@ stage configuration transformer.
+  , _devTransform :: ServeConfiguration -> ServeConfiguration
+    -- | @Staging@ stage configuration transfomer.
+  , _stagingTransform :: ServeConfiguration -> ServeConfiguration
+    -- | @Production@ stage configuration transfomer.
+  , _prodTransform :: ServeConfiguration -> ServeConfiguration
+    -- | TLS/SSL configuration. If it's not provided, a TLS listener will not
+    -- be started.
+  , _tlsConfiguration :: Maybe TLSConfiguration
+    -- | Port to start the non-TLS server.
+  , _port :: Int
+    -- | The current stage. This selects which transformer is used before
+    -- starting the server.
+  , _stage :: Stage
+    -- | Path where the source of built site is located. Defaults to `_site`.
+  , _path :: Maybe FilePath
+  }
+
+-- | The configuration for the TLS/HTTPS server.
+data TLSConfiguration = TLSConfiguration
+  { -- | A function for modifying or completely replacing the middleware stack
+    -- for the TLS server.
+    _tlsMiddleware :: MiddlewareStack -> MiddlewareStack
+    -- | Warp @TLSSettings@, which can be used to provide certificates.
+  , _tlsSettings :: TLSSettings
+    -- | Port to start the TLS server.
+  , _tlsPort :: Int
+  }
 
 data HakyllServeCommand
   = HakyllCommand HakyllCommandOptions
@@ -54,40 +103,6 @@ data HakyllCommandOptions = HakyllCommandOptions String Bool Bool Bool
 data HakyllServeOptions = HakyllServeOptions
   { hsCommand :: HakyllServeCommand }
   deriving (Show)
-
-data ServeConfiguration = ServeConfiguration
-  { _hakyllConfiguration :: Configuration
-    -- | Base middleware stack.
-  , _middleware :: MiddlewareStack
-    -- | @Developer@ stage configuration transformer.
-  , _devTransform :: ServeConfiguration -> ServeConfiguration
-    -- | @Staging@ stage configuration transfomer.
-  , _stagingTransform :: ServeConfiguration -> ServeConfiguration
-    -- | @Production@ stage configuration transfomer.
-  , _prodTransform :: ServeConfiguration -> ServeConfiguration
-    -- | TLS/SSL configuration.
-  , _tlsConfiguration :: Maybe TLSConfiguration
-    -- | Port to start the non-TLS server.
-  , _port :: Int
-    -- | The current stage. This selects which transformer is used before
-    -- starting the server.
-  , _stage :: Stage
-    -- | Path where the source of built site is located. Defaults to `_site`.
-  , _path :: Maybe FilePath
-  }
-
-data TLSConfiguration = TLSConfiguration
-  { -- | A function for modifying or completely replacing the middleware stack
-    -- for the TLS server.
-    _tlsMiddleware :: MiddlewareStack -> MiddlewareStack
-    -- | Warp @TLSSettings@, which can be used to provide certificates.
-  , _tlsSettings :: TLSSettings
-    -- | Port to start the TLS server.
-  , _tlsPort :: Int
-  }
-
-makeLenses ''ServeConfiguration
-makeLenses ''TLSConfiguration
 
 hakyllServeOptions :: Parser HakyllServeOptions
 hakyllServeOptions = runA $ proc () -> do
@@ -113,6 +128,7 @@ pinfo :: ParserInfo HakyllServeOptions
 pinfo = info hakyllServeOptions
   (progDesc "Hakyll static site compiler and server")
 
+-- | A default configuration set which can be used as a starting point.
 defaultServeConfiguration :: ServeConfiguration
 defaultServeConfiguration = ServeConfiguration
   { _hakyllConfiguration = defaultConfiguration
@@ -125,6 +141,9 @@ defaultServeConfiguration = ServeConfiguration
   , _stage = Development
   , _path = Nothing
   }
+
+makeLenses ''ServeConfiguration
+makeLenses ''TLSConfiguration
 
 -- | The __serve__ cousin of @Hakyll.hakyllWith@. It provides a wrapper of the
 -- usual Hakyll commands and a command for serving the built site.
