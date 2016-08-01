@@ -1,6 +1,14 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE RecordWildCards  #-}
 
+-- | The Main module contains an implementation of a configurable static web
+-- server with support for a middleware stack and different environments
+-- (development, staging, production).
+--
+-- Take a look at 'ServeConfiguration' for all the possible configuration
+-- options or simply use it's 'Data.Default.Default' instance for a basic
+-- server.
+--
 module Network.Wai.Serve.Main
   ( serve
   , serve'
@@ -24,7 +32,7 @@ serve = serve' . transform
 
 -- | Starts a server with the provided @ServeConfiguration@. If TLS settings
 -- are provided, an additional server is started for handling secure requests.
--- Unlike $serve$, stage transforms are not applied on the provided
+-- Unlike $serve'$, stage transforms are not applied on the provided
 -- configuration.
 serve' :: (MonadIO m, MonadBaseControl IO m) => ServeConfiguration -> m ()
 serve' ServeConfiguration{..} = runStdoutLoggingT $ do

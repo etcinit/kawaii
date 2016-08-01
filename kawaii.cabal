@@ -6,17 +6,12 @@ name:           kawaii
 version:        0.0.1.0
 synopsis:       Utilities for serving static sites and blogs with Wai/Warp
 category:       Web
-homepage:       https://github.com/etcinit/kawaii#readme
-bug-reports:    https://github.com/etcinit/kawaii/issues
+homepage:       https://phabricator.chromabits.com/diffusion/KWAI/
 maintainer:     Eduardo Trujillo <ed@chromabits.com>
 license:        Apache
 license-file:   LICENSE
 build-type:     Simple
 cabal-version:  >= 1.10
-
-source-repository head
-  type: git
-  location: https://github.com/etcinit/kawaii
 
 library
   hs-source-dirs:

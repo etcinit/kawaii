@@ -1,5 +1,6 @@
 {-# LANGUAGE Arrows            #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell   #-}
 
 -- | The Main module contains a wrapper function that can be used as your
 -- program's main function. It encapsulates both the Hakyll commands and the
@@ -10,11 +11,15 @@ module Hakyll.Serve.Main
   , hakyllServeWith
     -- * Configuration
   , HakyllServeConfiguration(..)
+  , -- * Lenses
+    hscHakyllConfiguration
+  , hscServeConfiguration
   ) where
 
 import Options.Applicative
 import System.Environment  (getArgs, withArgs)
 
+import Control.Lens               (makeLenses)
 import Data.Default               (Default, def)
 import Hakyll                     (defaultConfiguration, hakyllWith)
 import Hakyll.Core.Configuration  (Configuration)
@@ -97,3 +102,4 @@ hakyllServeWith conf rules = do
 hakyllServe :: Rules a -> IO ()
 hakyllServe = hakyllServeWith def
 
+makeLenses ''HakyllServeConfiguration

@@ -90,6 +90,7 @@ gzipMiddleware :: Middleware
 gzipMiddleware = gzip $ def {gzipFiles = GzipCompress}
 
 -- | Domain redirection middleware.
+--
 -- When the site is live, we want to redirect users to the right domain name
 -- regarles of whether they arrive from a www. domain, the server's IP address
 -- or a spoof domain which is pointing to this server.
@@ -113,6 +114,7 @@ stsHeadersMiddleware = addHeaders
   [("Strict-Transport-Security", "max-age=31536000; includeSubdomains")]
 
 -- | Content Security Policy middleware.
+--
 -- Here we add the CSP header which includes the policies for this blog.
 cspHeadersMiddleware :: [Directive] -> Middleware
 cspHeadersMiddleware directives = addHeaders
@@ -123,6 +125,7 @@ cspHeadersMiddleware directives = addHeaders
     glue xs = intercalate "; " (map showDirective xs)
 
 -- | De-indexify middleware.
+--
 -- Redirects any path ending in `/index.html` to just `/`.
 deindexifyMiddleware :: Middleware
 deindexifyMiddleware app req sendResponse

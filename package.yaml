@@ -3,7 +3,7 @@ version: 0.0.1.0
 synopsis: Utilities for serving static sites and blogs with Wai/Warp
 maintainer: Eduardo Trujillo <ed@chromabits.com>
 license: Apache
-github: etcinit/kawaii
+homepage: https://phabricator.chromabits.com/diffusion/KWAI/
 category: Web
 
 ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -Werror
