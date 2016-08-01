@@ -1,7 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell   #-}
 
--- | The Listeners module includes wrappers for starting TLS and non-TLS Warp
+-- |
+--
+-- Copyright: (c) Eduardo Trujillo, 2016
+-- License: Apache
+-- Stability: experimental
+--
+-- The Listeners module includes wrappers for starting TLS and non-TLS Warp
 -- servers, with support for IPv4 and IPv6.
 module Network.Wai.Serve.Listeners
   ( -- * Listeners

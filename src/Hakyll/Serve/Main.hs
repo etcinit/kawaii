@@ -2,9 +2,20 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell   #-}
 
--- | The Main module contains a wrapper function that can be used as your
+-- |
+--
+-- Copyright: (c) Eduardo Trujillo, 2016
+-- License: Apache
+-- Stability: experimental
+--
+-- The Main module contains a wrapper function that can be used as your
 -- program's main function. It encapsulates both the Hakyll commands and the
 -- server functionality into a single application.
+--
+-- Since this module mainly provides some glue for putting this two
+-- applications together, the actual documentation for the server part is
+-- available on 'Network.Wai.Serve'.
+--
 module Hakyll.Serve.Main
   ( -- * Main wrappers
     hakyllServe
@@ -36,6 +47,7 @@ import Network.Wai.Serve.Types (ServeConfiguration (..))
 -- changes depending on the stage. While starting up, the server process will
 -- take the base configuration, check the stage and pass the configuration
 -- through the appropriate transformer.
+--
 data HakyllServeConfiguration = HakyllServeConfiguration
   { _hscHakyllConfiguration :: Configuration
   , _hscServeConfiguration  :: ServeConfiguration

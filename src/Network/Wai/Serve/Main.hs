@@ -1,7 +1,13 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE RecordWildCards  #-}
 
--- | The Main module contains an implementation of a configurable static web
+-- |
+--
+-- Copyright: (c) Eduardo Trujillo, 2016
+-- License: Apache
+-- Stability: experimental
+--
+-- The Main module contains an implementation of a configurable static web
 -- server with support for a middleware stack and different environments
 -- (development, staging, production).
 --

@@ -1,12 +1,19 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+-- |
+--
+-- Copyright: (c) Eduardo Trujillo, 2016
+-- License: Apache
+-- Stability: experimental
+--
+-- A collection of middleware useful for static websites.
 module Network.Wai.Serve.Middleware
   ( -- * Middleware Stacks
     MiddlewareStack(..)
   , (<#>)
   , flatten
   , wrap
-    -- * Middlewares
+    -- * Middleware
   , loggerMiddleware
   , forceSSLMiddleware
   , gzipMiddleware
@@ -47,7 +54,7 @@ infixl 5 <#>
 flatten :: MiddlewareStack -> Middleware
 flatten (MiddlewareStack s) = foldr (.) id s
 
--- | Wraps a WAI application in the stack. (Alias of $flatten$)
+-- | Wraps a WAI application in the stack. (Alias of 'flatten')
 wrap :: MiddlewareStack -> Application -> Application
 wrap = flatten
 

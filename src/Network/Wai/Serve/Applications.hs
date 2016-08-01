@@ -1,6 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 
--- | Utility Wai applications.
+-- |
+--
+-- Copyright: (c) Eduardo Trujillo, 2016
+-- License: Apache
+-- Stability: experimental
+--
+-- Utility Wai applications.
 module Network.Wai.Serve.Applications where
 
 import Data.Maybe  (fromMaybe, mapMaybe)

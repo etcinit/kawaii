@@ -1,5 +1,12 @@
 {-# LANGUAGE TemplateHaskell #-}
 
+-- |
+--
+-- Copyright: (c) Eduardo Trujillo, 2016
+-- License: Apache
+-- Stability: experimental
+--
+-- Types used by the Kawaii package.
 module Network.Wai.Serve.Types
   ( -- * Middleware Stack
     MiddlewareStack(..)
@@ -62,7 +69,18 @@ data Directive
   | StyleSrc SourceList
   | UpgradeInsecureRequests
 
-data MiddlewareStack = MiddlewareStack [Middleware]
+-- | A middleware stack is a simple container of Wai middleware. The top of the
+-- stack is considered to be the outermost layer of middleware while the bottom
+-- of the stack is the innermost layer of middleware.
+--
+-- The stack is a 'Monoid', so it can be combined with other stacks using
+-- 'Data.Monoid.<>', and an empty one can be obtained using 'mempty'.
+--
+data MiddlewareStack
+  -- | The constructor takes a list of middleware, where the left-most item in
+  -- the list will end up at the top of the stack, and the right-most at the
+  -- bottom.
+  = MiddlewareStack [Middleware]
 
 instance Monoid MiddlewareStack where
   mempty = MiddlewareStack []
@@ -75,6 +93,7 @@ instance Monoid MiddlewareStack where
 -- HTTP listener and a smaller middleware stack, while a production server
 -- also listens for TLS connections and has additional middlewares that only
 -- make sense on a public server.
+--
 data Stage = Development | Staging | Production deriving (Show)
 
 -- | The configuration for the server process.
@@ -83,6 +102,7 @@ data Stage = Development | Staging | Production deriving (Show)
 -- changes depending on the stage. While starting up, the server process will
 -- take the base configuration, check the stage and pass the configuration
 -- through the appropriate transformer.
+--
 data ServeConfiguration = ServeConfiguration
   { -- | Base middleware stack.
     _scMiddleware       :: MiddlewareStack
