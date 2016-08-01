@@ -9,7 +9,7 @@ category:       Web
 homepage:       https://github.com/etcinit/kawaii#readme
 bug-reports:    https://github.com/etcinit/kawaii/issues
 maintainer:     Eduardo Trujillo <ed@chromabits.com>
-license:        MIT
+license:        Apache
 license-file:   LICENSE
 build-type:     Simple
 cabal-version:  >= 1.10

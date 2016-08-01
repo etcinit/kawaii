@@ -2,7 +2,7 @@ name: kawaii
 version: 0.0.1.0
 synopsis: Utilities for serving static sites and blogs with Wai/Warp
 maintainer: Eduardo Trujillo <ed@chromabits.com>
-license: MIT
+license: Apache
 github: etcinit/kawaii
 category: Web
 
