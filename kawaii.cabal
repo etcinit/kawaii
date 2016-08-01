@@ -1,13 +1,13 @@
--- This file has been generated from package.yaml by hpack version 0.9.0.
+-- This file has been generated from package.yaml by hpack version 0.14.0.
 --
 -- see: https://github.com/sol/hpack
 
-name:           hakyll-serve
+name:           kawaii
 version:        0.0.1.0
-synopsis:       Utilities for serving Hakyll blogs
+synopsis:       Utilities for serving static sites and blogs with Wai/Warp
 category:       Web
-homepage:       https://github.com/etcinit/hakyll-serve#readme
-bug-reports:    https://github.com/etcinit/hakyll-serve/issues
+homepage:       https://github.com/etcinit/kawaii#readme
+bug-reports:    https://github.com/etcinit/kawaii/issues
 maintainer:     Eduardo Trujillo <ed@chromabits.com>
 license:        MIT
 license-file:   LICENSE
@@ -16,7 +16,7 @@ cabal-version:  >= 1.10
 
 source-repository head
   type: git
-  location: https://github.com/etcinit/hakyll-serve
+  location: https://github.com/etcinit/kawaii
 
 library
   hs-source-dirs:
@@ -39,15 +39,21 @@ library
     , streaming-commons == 0.1.*
     , containers
     , data-default
+    , lifted-base
+    , mtl
+    , monad-logger
+    , monad-control
   exposed-modules:
-      Hakyll.Serve
-      Hakyll.Serve.Applications
-      Hakyll.Serve.Listeners
       Hakyll.Serve.Main
-      Hakyll.Serve.Middleware
+      Network.Wai.Serve
+      Network.Wai.Serve.Applications
+      Network.Wai.Serve.Listeners
+      Network.Wai.Serve.Main
+      Network.Wai.Serve.Middleware
+      Network.Wai.Serve.Types
   default-language: Haskell2010
 
-test-suite hakyll-serve-spec
+test-suite wai-static-extra-spec
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   hs-source-dirs:
@@ -70,6 +76,10 @@ test-suite hakyll-serve-spec
     , streaming-commons == 0.1.*
     , containers
     , data-default
+    , lifted-base
+    , mtl
+    , monad-logger
+    , monad-control
     , hakyll-serve
     , hspec
     , QuickCheck

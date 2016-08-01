@@ -1,13 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Hakyll.Serve.Middleware
-  ( -- * Types
-    Domain
-  , SourceList
-  , TypeList
-  , Directive(..)
-    -- * Middleware Stacks
-  , MiddlewareStack(..)
+module Network.Wai.Serve.Middleware
+  ( -- * Middleware Stacks
+    MiddlewareStack(..)
   , (<#>)
   , flatten
   , wrap
@@ -22,53 +17,26 @@ module Hakyll.Serve.Middleware
   , deindexifyMiddleware
   ) where
 
-import Prelude hiding (unwords)
 import Data.ByteString (ByteString)
-import Data.Text (Text, unwords, intercalate)
-import qualified Data.Text as T (concat)
-import Data.Text.Encoding (encodeUtf8)
-import Data.Monoid ((<>))
-import Safe (lastMay)
-import Network.Wai (Application, Middleware, pathInfo)
-import Network.Wai.Middleware.AddHeaders (addHeaders)
-import Network.Wai.Middleware.ForceDomain (forceDomain)
-import Network.Wai.Middleware.Gzip (gzip, GzipFiles(GzipCompress), def, gzipFiles)
-import Network.Wai.Middleware.Vhost (redirectTo)
-import Network.Wai.Middleware.RequestLogger (logStdout)
-import Network.Wai.Middleware.ForceSSL (forceSSL)
+import Data.Monoid     ((<>))
+import Prelude         hiding (unwords)
 
-type Domain = ByteString
+import           Data.Text                            (Text, intercalate,
+                                                       unwords)
+import qualified Data.Text                            as T (concat)
+import           Data.Text.Encoding                   (encodeUtf8)
+import           Network.Wai                          (Application, Middleware,
+                                                       pathInfo)
+import           Network.Wai.Middleware.AddHeaders    (addHeaders)
+import           Network.Wai.Middleware.ForceDomain   (forceDomain)
+import           Network.Wai.Middleware.ForceSSL      (forceSSL)
+import           Network.Wai.Middleware.Gzip          (GzipFiles (GzipCompress),
+                                                       def, gzip, gzipFiles)
+import           Network.Wai.Middleware.RequestLogger (logStdout)
+import           Network.Wai.Middleware.Vhost         (redirectTo)
+import           Safe                                 (lastMay)
 
-type SourceList = [Text]
-type TypeList = [Text]
-
-data Directive
-  = BaseURI SourceList
-  | ChildSrc SourceList
-  | ConnectSrc SourceList
-  | DefaultSrc SourceList
-  | FontSrc SourceList
-  | FormAction SourceList
-  | FrameAncestors SourceList
-  | FrameSrc SourceList
-  | ImgSrc SourceList
-  | ManifestSrc SourceList
-  | MediaSrc SourceList
-  | ObjectSrc SourceList
-  | PluginTypes TypeList
-  | Referrer Text
-  | ReflectedXSS Text
-  | ReportURI Text
-  | Sandbox Text
-  | ScriptSrc SourceList
-  | StyleSrc SourceList
-  | UpgradeInsecureRequests
-
-data MiddlewareStack = MiddlewareStack [Middleware]
-
-instance Monoid MiddlewareStack where
-  mempty = MiddlewareStack []
-  mappend (MiddlewareStack x) (MiddlewareStack y) = MiddlewareStack (x ++ y)
+import Network.Wai.Serve.Types
 
 infixl 5 <#>
 -- | A combinator for adding a middleware to the bottom of a stack.
@@ -79,13 +47,13 @@ infixl 5 <#>
 flatten :: MiddlewareStack -> Middleware
 flatten (MiddlewareStack s) = foldr (.) id s
 
--- | Wraps a WAI application in the stack.
+-- | Wraps a WAI application in the stack. (Alias of $flatten$)
 wrap :: MiddlewareStack -> Application -> Application
-wrap s = (flatten s)
+wrap = flatten
 
 dt :: Text -> [Text] -> Text
 dt prefix [] = prefix
-dt prefix xs = unwords ([prefix] ++ xs)
+dt prefix xs = unwords (prefix : xs)
 
 showDirective :: Directive -> Text
 showDirective (BaseURI xs) = dt "base-uri" xs
@@ -119,19 +87,17 @@ forceSSLMiddleware = forceSSL
 
 -- | Gzip compression middleware.
 gzipMiddleware :: Middleware
-gzipMiddleware = gzip $ def
-  { gzipFiles = GzipCompress
-  }
+gzipMiddleware = gzip $ def {gzipFiles = GzipCompress}
 
 -- | Domain redirection middleware.
 -- When the site is live, we want to redirect users to the right domain name
 -- regarles of whether they arrive from a www. domain, the server's IP address
 -- or a spoof domain which is pointing to this server.
 domainMiddleware :: Domain -> Middleware
-domainMiddleware target = forceDomain $ 
-  \domain -> if domain `elem` [target, "localhost"]
-     then Nothing
-     else Just target
+domainMiddleware target = forceDomain
+  $ \domain -> if domain `elem` [target, "localhost"]
+    then Nothing
+    else Just target
 
 -- | Common security headers middleware.
 securityHeadersMiddleware :: Middleware
@@ -159,21 +125,22 @@ cspHeadersMiddleware directives = addHeaders
 -- | De-indexify middleware.
 -- Redirects any path ending in `/index.html` to just `/`.
 deindexifyMiddleware :: Middleware
-deindexifyMiddleware app req sendResponse =
-  if lastMay (pathInfo req) == Just "index.html"
-     then sendResponse $ redirectTo newPath
-     else app req sendResponse
-      where
-        newPath :: ByteString
-        newPath = encodeUtf8 $ processPath oldPath
+deindexifyMiddleware app req sendResponse
+  = if lastMay (pathInfo req) == Just "index.html"
+    then sendResponse $ redirectTo newPath
+    else app req sendResponse
 
-        processPath :: [Text] -> Text
-        processPath xs = case xs of
-          [] -> "/"
-          _ -> T.concat $ map prefixSlash xs
+    where
+      newPath :: ByteString
+      newPath = encodeUtf8 $ processPath oldPath
 
-        oldPath :: [Text]
-        oldPath = init $ pathInfo req
+      processPath :: [Text] -> Text
+      processPath xs = case xs of
+        [] -> "/"
+        _ -> T.concat $ map prefixSlash xs
 
-        prefixSlash :: Text -> Text
-        prefixSlash = (<>) "/"
+      oldPath :: [Text]
+      oldPath = init $ pathInfo req
+
+      prefixSlash :: Text -> Text
+      prefixSlash = (<>) "/"

@@ -1,9 +1,9 @@
-name: hakyll-serve
+name: kawaii
 version: 0.0.1.0
-synopsis: Utilities for serving Hakyll blogs
+synopsis: Utilities for serving static sites and blogs with Wai/Warp
 maintainer: Eduardo Trujillo <ed@chromabits.com>
 license: MIT
-github: etcinit/hakyll-serve
+github: etcinit/kawaii
 category: Web
 
 ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -Werror
@@ -27,12 +27,16 @@ dependencies:
   - streaming-commons == 0.1.*
   - containers
   - data-default
+  - lifted-base
+  - mtl
+  - monad-logger
+  - monad-control
 
 library:
   source-dirs: src
 
 tests:
-  hakyll-serve-spec:
+  wai-static-extra-spec:
     main: Spec.hs
     source-dirs: test
     dependencies:
