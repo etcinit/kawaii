@@ -3,7 +3,7 @@
 -- see: https://github.com/sol/hpack
 
 name:           kawaii
-version:        0.0.1.0
+version:        0.0.1.1
 synopsis:       Utilities for serving static sites and blogs with Wai/Warp
 category:       Web
 homepage:       https://phabricator.chromabits.com/diffusion/KWAI/
