@@ -13,18 +13,22 @@ license-file:   LICENSE
 build-type:     Simple
 cabal-version:  >= 1.10
 
+flag hakyll
+  description: Include Hakyll utilities
+  manual: False
+  default: True
+
 library
   hs-source-dirs:
       src
   default-extensions: LambdaCase
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -Werror
+  ghc-options: -Wall
   build-depends:
       base >= 4.7 && < 5
     , safe == 0.3.*
     , text
     , lens
     , bytestring
-    , hakyll
     , optparse-applicative
     , warp == 3.*
     , warp-tls == 3.*
@@ -38,8 +42,12 @@ library
     , mtl
     , monad-logger
     , monad-control
+  if flag(hakyll)
+    build-depends:
+        hakyll
+    exposed-modules:
+        Hakyll.Serve.Main
   exposed-modules:
-      Hakyll.Serve.Main
       Network.Wai.Serve
       Network.Wai.Serve.Applications
       Network.Wai.Serve.Listeners
@@ -54,14 +62,13 @@ test-suite wai-static-extra-spec
   hs-source-dirs:
       test
   default-extensions: LambdaCase
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -Werror
+  ghc-options: -Wall
   build-depends:
       base >= 4.7 && < 5
     , safe == 0.3.*
     , text
     , lens
     , bytestring
-    , hakyll
     , optparse-applicative
     , warp == 3.*
     , warp-tls == 3.*
@@ -75,7 +82,10 @@ test-suite wai-static-extra-spec
     , mtl
     , monad-logger
     , monad-control
-    , hakyll-serve
+    , kawaii
     , hspec
     , QuickCheck
+  if flag(hakyll)
+    build-depends:
+        hakyll
   default-language: Haskell2010
